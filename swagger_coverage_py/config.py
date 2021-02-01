@@ -1,5 +1,6 @@
-from typing import List
+import json
 
+import rootpath
 from singleton_decorator import singleton
 
 
@@ -7,14 +8,16 @@ from singleton_decorator import singleton
 class ListenerConfig:
     def __init__(
         self,
-        output_dir: str = None,
-        swagger_coverage_config: str = None,
-        link_to_swagger_json: str = None,
-        app_swagger_json_output: str = None,
-        ignore_requests: List[str] = None,
     ):
-        self.output_dir = output_dir
-        self.swagger_coverage_config = swagger_coverage_config
-        self.link_to_swagger_json = link_to_swagger_json
-        self.app_swagger_json_output = app_swagger_json_output
-        self.ignore_requests = ignore_requests if ignore_requests else []
+        root = rootpath.detect()
+
+        with open(f"{root}/coverage_config.json", "r") as f:
+            json_config: dict = json.loads(f.read())
+            print(json_config)
+
+        self.output_dir = json_config.get("output_dir")
+        self.swagger_coverage_config = json_config.get("swagger_coverage_config", None)
+        self.link_to_swagger_json = json_config.get("link_to_swagger_json")
+
+        ignore = json_config.get("ignore_requests")
+        self.ignore_requests = ignore if ignore else []

@@ -13,24 +13,24 @@ class Runner:
     def __init__(self):
         self.config = ListenerConfig()
 
-    def setup(self, auth: object = None):
-        shutil.rmtree({self.config.output_dir})
-        Path(self.config.output_dir).mkdir(parents=True, exist_ok=True)
+    def setup(self, cleanup_input: bool = False, auth: object = None):
+        if cleanup_input:
+            shutil.rmtree(self.config.output_dir)
+            Path(self.config.output_dir).mkdir(parents=True, exist_ok=True)
 
-        swagger_json_data = requests.get(self.config.link_to_swagger_json, auth=auth).json()
-        with open('./swagger.json') as f:
+        swagger_json_data = requests.get(
+            self.config.link_to_swagger_json, auth=auth
+        ).json()
+        with open("swagger.json", "w+") as f:
+            swagger_json_data["swagger"] = "2.0"
             f.write(json.dumps(swagger_json_data))
 
     def collect(self):
         for mask in self.config.ignore_requests:
             glob.glob(mask, recursive=True)
 
-        os.system(
-            f"../swagger-coverage-commandline/bin/swagger-coverage-commandline "
-            f"-s ./swagger.json "
-            f"-i {self.config.output_dir} "
-            f"-c  {self.config.swagger_coverage_config}"
-        )
-
-
-Runner().collect()
+        cmd_ = "src/swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
+        if config := self.config.swagger_coverage_config:
+            os.system(f"{cmd_} -s swagger.json -i {self.config.output_dir} -c {config}")
+        else:
+            os.system(f"{cmd_} -s swagger.json -i {self.config.output_dir}")
