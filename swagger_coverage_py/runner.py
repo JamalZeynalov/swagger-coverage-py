@@ -25,7 +25,12 @@ class Runner:
 
     def collect(self):
         for mask in self.config.ignore_requests:
-            glob.glob(mask, recursive=True)
+            files_list = glob.glob(f"{self.config.output_dir}/{mask}", recursive=True)
+            for file_path in files_list:
+                try:
+                    os.remove(file_path)
+                except OSError:
+                    print(f"Error while deleting file: {file_path}")
 
         cmd_ = "src/swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
         if config := self.config.swagger_coverage_config:
@@ -34,4 +39,4 @@ class Runner:
             os.system(f"{cmd_} -s swagger.json -i {self.config.output_dir}")
 
     def cleanup_input_files(self):
-        shutil.rmtree(self.config.output_dir)
+        shutil.rmtree(self.config.output_dir, ignore_errors=True)
