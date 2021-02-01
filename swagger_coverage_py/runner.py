@@ -13,10 +13,8 @@ class Runner:
     def __init__(self):
         self.config = ListenerConfig()
 
-    def setup(self, cleanup_input: bool = False, auth: object = None):
-        if cleanup_input:
-            shutil.rmtree(self.config.output_dir)
-            Path(self.config.output_dir).mkdir(parents=True, exist_ok=True)
+    def setup(self, auth: object = None):
+        Path(self.config.output_dir).mkdir(parents=True, exist_ok=True)
 
         swagger_json_data = requests.get(
             self.config.link_to_swagger_json, auth=auth
@@ -34,3 +32,6 @@ class Runner:
             os.system(f"{cmd_} -s swagger.json -i {self.config.output_dir} -c {config}")
         else:
             os.system(f"{cmd_} -s swagger.json -i {self.config.output_dir}")
+
+    def cleanup_input_files(self):
+        shutil.rmtree(self.config.output_dir)
