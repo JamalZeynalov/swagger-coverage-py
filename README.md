@@ -8,8 +8,8 @@
 
 Some more info about the project you can also
 find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%81%D1%82%D1%8B%20%D0%BD%D0%B0%20api/2020/01/16/swagger-coverage)
-.
-<br><img src="https://raw.githubusercontent.com/JamalZeynalov/wagger-coverage-py/master/images/swagger-coverage-report.png" width=1100 alt="Report">
+<br>
+<img src="https://raw.githubusercontent.com/JamalZeynalov/swagger-coverage-py/master/images/swagger-coverage-report.png" width=1100>
 
 # How to use:
 
