@@ -23,7 +23,7 @@ class Runner:
             swagger_json_data["swagger"] = "2.0"
             f.write(json.dumps(swagger_json_data))
 
-    def collect(self):
+    def generate_report(self):
         for mask in self.config.ignore_requests:
             files_list = glob.glob(f"{self.config.output_dir}/{mask}", recursive=True)
             for file_path in files_list:
