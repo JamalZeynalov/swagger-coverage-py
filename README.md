@@ -18,7 +18,8 @@ find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%
 Examples of configuration options you can find
 in [Configuration options](https://github.com/viclovsky/swagger-coverage#configuration-options) section of the original
 tool documentation.
-> #### Note: You can change the name and location of this file if you want.
+> #### Note: This config is not required. You can skip this step and use the default behavior.
+> #### Also, you can change the name and location of this file if you want.
 
 ### 2. Create `swagger-coverage-adapter-config.json` file in your project root:
 
@@ -33,9 +34,8 @@ tool documentation.
 }
 ```
 
-* **output_dir** - specify any path (from your project root) for your output folder. The tool will automatically create
-  this folder and save all recorded JSON files there.
-* **swagger_coverage_config** - Path to your `swagger-coverage-config.json` file
+* **output_dir** - Path from your project root to the output folder. The tool will automatically create this folder and save all recorded JSON files there.
+* **swagger_coverage_config** - Path to your `swagger-coverage-config.json` file. Set the value `false` to use default config.
 * **link_to_swagger_json** - HTTP(s) link to your OpenApi/Swagger documentation in JSON format. Adapted `swagger.json`
   file will be created in your project root.
 * **ignore_requests** - all files matching any of listed masks will be removed before the report generation.
