@@ -13,7 +13,16 @@ find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%
 
 # How to use:
 
-### 1. Create and place `swagger-coverage-config.json` file to your project:
+### 1. Install `swagger-coverage-py` as a project requirement.
+```shell
+pip install -e git+ssh://git@github.com/JamalZeynalov/swagger-coverage-py.git#egg=swagger_coverage
+```
+or just add the dependency to requirements.txt
+```text
+-e git+ssh://git@github.com/JamalZeynalov/swagger-coverage-py.git#egg=swagger_coverage
+```
+
+### 2. Create and place `swagger-coverage-config.json` file to your project:
 
 Examples of configuration options you can find
 in [Configuration options](https://github.com/viclovsky/swagger-coverage#configuration-options) section of the original
@@ -21,7 +30,7 @@ tool documentation.
 > #### Note: This config is not required. You can skip this step and use the default behavior.
 > #### Also, you can change the name and location of this file if you want.
 
-### 2. Create `swagger-coverage-adapter-config.json` file in your project root:
+### 3. Create `swagger-coverage-adapter-config.json` file in your project root:
 
 ```.json
 {
@@ -40,7 +49,7 @@ tool documentation.
   file will be created in your project root.
 * **ignore_requests** - all files matching any of listed masks will be removed before the report generation.
 
-### 3. Add the session scoped fixture
+### 4. Add the session scoped fixture
 
 ```python
 @pytest.fixture(scope="session", autouse=True)
@@ -59,7 +68,7 @@ def setup_swagger_coverage():
 > ```
 > This is required to download swagger.json
 
-### 3. Add the session scoped fixture
+### 5. Add the session scoped fixture
 
 ```python
 from requests import Response
@@ -76,6 +85,9 @@ response: Response = CoverageListener(
 ).response
 ```
 > #### Note: "auth" and "params" arguments are not required. <br>You can use any other **kwargs that are applicable for Requests library.
+
+### 6. Run your tests and open created `swagger-coverage-report.html` in your browser.
+
 
 # How it works:
 0. The fixture `setup_swagger_coverage` setups required artifacts
