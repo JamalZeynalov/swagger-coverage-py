@@ -1,20 +1,29 @@
-import glob
 import json
 import os
+import re
 import shutil
 from pathlib import Path
 
 import requests
-from swagger_coverage_py.config import AdapterConfig
 
 
 class Runner:
-    def __init__(self, api_name: str):
-        self.config = AdapterConfig(api_name)
+    def __init__(self, api_name: str, host: str):
+        self.host = host
         self.swagger_doc_file = f"swagger-{api_name}.json"
+        self.output_dir = self.__get_output_dir()
+        self.ignore_requests = []
+        self.swagger_coverage_config = f"swagger-coverage-config-{api_name}.json"
 
-    def setup(self, link_to_swagger_json: str, auth: object = None):
-        Path(self.config.output_dir).mkdir(parents=True, exist_ok=True)
+    def __get_output_dir(self):
+        output_dir = "swagger-coverage-output"
+        subdir = re.match(r"(^\w*)://(.*)", self.host).group(2)
+        return f"{output_dir}/{subdir}"
+
+    def setup(self, path_to_swagger_json: str, auth: object = None):
+        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
+
+        link_to_swagger_json = f"{self.host}{path_to_swagger_json}"
 
         response = requests.get(link_to_swagger_json, auth=auth)
         assert response.ok, f"Swagger doc is not pulled. See details: " \
@@ -27,19 +36,12 @@ class Runner:
             f.write(json.dumps(swagger_json_data))
 
     def generate_report(self):
-        for mask in self.config.ignore_requests:
-            files_list = glob.glob(f"{self.config.output_dir}/{mask}", recursive=True)
-            for file_path in files_list:
-                try:
-                    os.remove(file_path)
-                except OSError:
-                    print(f"Error while deleting file: {file_path}")
-
         cmd_ = "src/swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
-        if config := self.config.swagger_coverage_config:
-            os.system(f"{cmd_} -s {self.swagger_doc_file} -i {self.config.output_dir} -c {config}")
+
+        if config := self.swagger_coverage_config:
+            os.system(f"{cmd_} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}")
         else:
-            os.system(f"{cmd_} -s {self.swagger_doc_file} -i {self.config.output_dir}")
+            os.system(f"{cmd_} -s {self.swagger_doc_file} -i {self.output_dir}")
 
     def cleanup_input_files(self):
-        shutil.rmtree(self.config.output_dir, ignore_errors=True)
+        shutil.rmtree(self.output_dir, ignore_errors=True)

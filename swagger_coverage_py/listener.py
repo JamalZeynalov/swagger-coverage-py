@@ -5,8 +5,6 @@ from typing import List
 import requests
 from faker import Faker
 
-from swagger_coverage_py.config import AdapterConfig
-
 
 class URI:
     def __init__(self, host: str, unformatted_path: str, **uri_params):
@@ -19,7 +17,7 @@ class URI:
 
 class CoverageListener:
     def __init__(
-        self, method: str, base_url: str, raw_path: str, uri_params: dict, **kwargs
+            self, method: str, base_url: str, raw_path: str, uri_params: dict, **kwargs
     ):
         self.uri = URI(base_url, raw_path, **uri_params)
         self.other_request_params = kwargs
@@ -69,6 +67,9 @@ class CoverageListener:
         }
         return dict_
 
+    def __output_subdir(self):
+        return re.match(r"(^\w*)://(.*)", self.uri.host).group(2)
+
     def write_schema(self):
         schema_dict = {
             "swagger": "2.0",
@@ -84,7 +85,8 @@ class CoverageListener:
                 "/", "-"
             )
         )
-        with open(f"{AdapterConfig().output_dir}/{file_name}", "w+") as file:
+        path_ = f"swagger-coverage-output/{self.__output_subdir()}"
+        with open(f"{path_}/{file_name}", "w+") as file:
             file.write(json.dumps(schema_dict, indent=4))
 
         return schema_dict
