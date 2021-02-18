@@ -5,7 +5,7 @@ from typing import List
 import requests
 from faker import Faker
 
-from swagger_coverage_py.config import ListenerConfig
+from swagger_coverage_py.config import AdapterConfig
 
 
 class URI:
@@ -84,7 +84,7 @@ class CoverageListener:
                 "/", "-"
             )
         )
-        with open(f"{ListenerConfig().output_dir}/{file_name}", "w+") as file:
+        with open(f"{AdapterConfig().output_dir}/{file_name}", "w+") as file:
             file.write(json.dumps(schema_dict, indent=4))
 
         return schema_dict

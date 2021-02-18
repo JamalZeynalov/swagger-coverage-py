@@ -1,22 +1,24 @@
 import json
+from typing import List
 
-import rootpath
 from singleton_decorator import singleton
 
 
 @singleton
-class ListenerConfig:
-    def __init__(
-        self,
-    ):
-        root = rootpath.detect()
+class AdapterConfig:
+    def __init__(self, api_name: str = None):
+        self.api_name = api_name
 
-        with open(f"{root}/swagger-coverage-adapter-config.json", "r") as f:
-            json_config: dict = json.loads(f.read())
+        with open(self.swagger_coverage_config, "r") as f:
+            self.json_config: dict = json.loads(f.read())
 
-        self.output_dir = json_config.get("output_dir")
-        self.swagger_coverage_config = json_config.get("swagger_coverage_config")
-        self.link_to_swagger_json = json_config.get("link_to_swagger_json")
+        self.output_dir = f"swagger-coverage-output-{self.name}"
 
-        ignore = json_config.get("ignore_requests")
-        self.ignore_requests = ignore if ignore else []
+    @property
+    def ignore_requests(self) -> List[str]:
+        ignore_list = self.json_config.get("ignore_requests")
+        return ignore_list if ignore_list else []
+
+    @property
+    def swagger_coverage_config(self):
+        return f"{self.json_config.get('swagger_coverage_config')}-{self.api_name}.json"

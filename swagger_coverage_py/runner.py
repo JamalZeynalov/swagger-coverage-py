@@ -6,19 +6,17 @@ from pathlib import Path
 
 import requests
 
-from swagger_coverage_py.config import ListenerConfig
+from swagger_coverage_py.config import AdapterConfig
 
 
 class Runner:
-    def __init__(self):
-        self.config = ListenerConfig()
+    def __init__(self, api_name: str):
+        self.config = AdapterConfig(api_name)
 
-    def setup(self, auth: object = None):
+    def setup(self, link_to_swagger_json: str, auth: object = None):
         Path(self.config.output_dir).mkdir(parents=True, exist_ok=True)
 
-        swagger_json_data = requests.get(
-            self.config.link_to_swagger_json, auth=auth
-        ).json()
+        swagger_json_data = requests.get(link_to_swagger_json, auth=auth).json()
         with open("swagger.json", "w+") as f:
             swagger_json_data["swagger"] = "2.0"
             f.write(json.dumps(swagger_json_data))
