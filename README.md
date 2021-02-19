@@ -14,6 +14,7 @@ find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%
 <img src="https://raw.githubusercontent.com/JamalZeynalov/swagger-coverage-py/master/images/swagger-coverage-report.png" width=1100>
 
 # How to use:
+All required steps are listed below. Additionally, you can find a working example here: [allure-results-sample](https://github.com/JamalZeynalov/allure-results-sample).
 
 ### 1. Install `swagger-coverage-py` as a project requirement.
 
@@ -144,6 +145,9 @@ response: Response = CoverageListener(
 > #### Note: "auth" and "params" arguments are default for "requests" lib and are not required. <br>You can use any other **kwargs that are applicable for Requests library.
 
 ### 5. Run your tests and open created `swagger-coverage-report-<api_name>.html` report(s) in your browser.
+Important remarks:
+1. Virtual environments are supported. Make sure your virtual environment directory has name `venv`.  
+2. To create report you have to run your test from the project root. Check that workind directory of your runner is not `"<root>/test"`
 
 # How it works:
 

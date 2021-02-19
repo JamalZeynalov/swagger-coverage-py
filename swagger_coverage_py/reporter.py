@@ -38,14 +38,26 @@ class CoverageReporter:
             f.write(json.dumps(swagger_json_data))
 
     def generate_report(self):
-        cmd_ = "src/swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
+        inner_location = "swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
+        cmd_ = f"src/{inner_location}"
+        cmd_venv = f"venv/src/{inner_location}"
+        cmd_venv_2 = f".venv/src/{inner_location}"
 
-        if config := self.swagger_coverage_config:
-            os.system(
-                f"{cmd_} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}"
-            )
+        if Path(cmd_).exists():
+            cmd_path = cmd_
+        elif Path(cmd_venv).exists():
+            cmd_path = cmd_venv
+        elif Path(cmd_venv_2).exists():
+            cmd_path = cmd_venv_2
         else:
-            os.system(f"{cmd_} -s {self.swagger_doc_file} -i {self.output_dir}")
+            raise Exception(
+                f"No commandline tools is found in following locations:\n{cmd_}\n{cmd_venv}\n"
+            )
+        if config := self.swagger_coverage_config:
+            command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}"
+            os.system(command)
+        else:
+            os.system(f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir}")
 
     def cleanup_input_files(self):
         shutil.rmtree(self.output_dir, ignore_errors=True)
