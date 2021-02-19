@@ -5,8 +5,6 @@ from typing import List
 import requests
 from faker import Faker
 
-from swagger_coverage_py.config import ListenerConfig
-
 
 class URI:
     def __init__(self, host: str, unformatted_path: str, **uri_params):
@@ -21,17 +19,29 @@ class CoverageListener:
     def __init__(
         self, method: str, base_url: str, raw_path: str, uri_params: dict, **kwargs
     ):
-        self.uri = URI(base_url, raw_path, **uri_params)
-        self.other_request_params = kwargs
-        self.response = requests.request(method, self.uri.full, **kwargs)
-        self.method = method
-        self.write_schema()
+        """Records an HTTP request as a file in swagger format
+
+        :param method: the HTTP method name in lowercase.
+        :param base_url: Base URl with a protocol but without a path. (e.g. "https://petstore.swagger.io")
+        :param raw_path: Not formatted URL path.
+            Parameters names in braces will be used for further formatting  (e.g. "/v2/store/order/{orderId}")
+        :param uri_params: URL path parameters. Must match to parameters names specified in "raw_path"
+        :param kwargs: Optional arguments that are applicable
+            for appropriate request of "requests" library. (e.g. "auth", "headers", "cookies", etc.)
+        """
+        self.__uri = URI(base_url, raw_path, **uri_params)
+        self.__other_request_params = kwargs
+
+        self.response = requests.request(method, self.__uri.full, **kwargs)
+
+        self.__method = method
+        self.__write_schema()
 
     def __host(self):
-        return self.uri.host
+        return self.__uri.host
 
     def __schema(self) -> List[str]:
-        return [re.match(r"(^\w*):", self.uri.host).group(1)]
+        return [re.match(r"(^\w*):", self.__uri.host).group(1)]
 
     def __consumes(self) -> list:
         return [self.response.request.headers.get("content-type")]
@@ -41,14 +51,14 @@ class CoverageListener:
 
     def __path_params(self) -> list:
         params_ = []
-        for key, value in self.uri.uri_params.items():
+        for key, value in self.__uri.uri_params.items():
             params_.append(
                 {"name": key, "in": "path", "required": False, "x-example": value}
             )
         return params_
 
     def __query_params(self) -> list:
-        if not (q_params := self.other_request_params.get("params")):
+        if not (q_params := self.__other_request_params.get("params")):
             return []
 
         params_ = []
@@ -60,8 +70,8 @@ class CoverageListener:
 
     def __paths(self):
         dict_ = {
-            self.uri.raw: {
-                self.method: {
+            self.__uri.raw: {
+                self.__method: {
                     "parameters": self.__path_params() + self.__query_params(),
                     "responses": {self.response.status_code: {}},
                 }
@@ -69,7 +79,10 @@ class CoverageListener:
         }
         return dict_
 
-    def write_schema(self):
+    def __output_subdir(self):
+        return re.match(r"(^\w*)://(.*)", self.__uri.host).group(2)
+
+    def __write_schema(self):
         schema_dict = {
             "swagger": "2.0",
             "host": self.__host(),
@@ -80,11 +93,12 @@ class CoverageListener:
         }
         rnd = Faker().pystr(min_chars=5, max_chars=5)
         file_name = (
-            f"{self.method.upper()} {self.uri.formatted[1::]} ({rnd}).json".replace(
+            f"{self.__method.upper()} {self.__uri.formatted[1::]} ({rnd}).json".replace(
                 "/", "-"
             )
         )
-        with open(f"{ListenerConfig().output_dir}/{file_name}", "w+") as file:
+        path_ = f"swagger-coverage-output/{self.__output_subdir()}"
+        with open(f"{path_}/{file_name}", "w+") as file:
             file.write(json.dumps(schema_dict, indent=4))
 
         return schema_dict

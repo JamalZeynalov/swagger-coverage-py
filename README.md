@@ -1,6 +1,8 @@
+![Supported Python Versions](https://img.shields.io/badge/python-3.6-blue)
+![Version](https://img.shields.io/badge/Version-2.0.1-blue)
 # swagger-coverage-py
 
-### This project is the adapter which allows using [swagger-coverage](https://github.com/viclovsky/swagger-coverage) tool in Python projects (PyTest+Requests).
+#### This project is the adapter that allows using [swagger-coverage](https://github.com/viclovsky/swagger-coverage) tool in Python projects (PyTest+Requests).
 
 ## Original description summary:
 
@@ -14,61 +16,115 @@ find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%
 # How to use:
 
 ### 1. Install `swagger-coverage-py` as a project requirement.
+
 ```shell
 pip install -e git+ssh://git@github.com/JamalZeynalov/swagger-coverage-py.git#egg=swagger_coverage
 ```
+
 or just add the dependency to requirements.txt
+
 ```text
 -e git+ssh://git@github.com/JamalZeynalov/swagger-coverage-py.git#egg=swagger_coverage
 ```
 
-### 2. Create and place `swagger-coverage-config.json` file to your project:
+### 2. Add the session-scoped fixture
 
-Examples of configuration options you can find
-in [Configuration options](https://github.com/viclovsky/swagger-coverage#configuration-options) section of the original
-tool documentation.
-> #### Note: This config is not required. You can skip this step and use the default behavior.
-> #### Also, you can change the name and location of this file if you want.
+```python
+import pytest
+from swagger_coverage_py.reporter import CoverageReporter
+from requests.auth import HTTPBasicAuth
 
-### 3. Create `swagger-coverage-adapter-config.json` file in your project root:
 
-```.json
+@pytest.fixture(scope="session", autouse=True)
+def setup_swagger_coverage():
+    reporter = CoverageReporter(api_name="my-project", host="http://my-project.com")
+    reporter.cleanup_input_files()
+    reporter.setup("/api/v1/resources/my_project/doc/swagger.json", auth=HTTPBasicAuth("username", "password"))
+
+    yield
+    reporter.generate_report()
+```
+
+#### If you have 2 and more projects, then just add more reporters:
+
+```python
+import pytest
+from swagger_coverage_py.reporter import CoverageReporter
+from requests.auth import HTTPBasicAuth
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_swagger_coverage():
+    reporter = CoverageReporter(api_name="petstore", host="https://petstore.swagger.io")
+    reporter.cleanup_input_files()
+    reporter.setup(path_to_swagger_json="/v2/swagger.json")
+
+    reporter2 = CoverageReporter(api_name="my-project", host="http://my-project.com")
+    reporter2.cleanup_input_files()
+    reporter2.setup(path_to_swagger_json="/api/v1/swagger.json", auth=HTTPBasicAuth("username", "password"))
+
+    yield
+    reporter.generate_report()
+    reporter2.generate_report()
+```
+
+> #### Steps and Parameters:
+> `api_name` - Define the name of the API. This name will be used to find a configuration file.<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; For APIs in this example the files must
+> have names `swagger-coverage-config-petstore.json` and `swagger-coverage-config-my-project.json`.<br>
+>
+> `host` - The host of the API.
+> It will be used to download a swagger.json file and to identify the CoverageListener output directory for each API.
+>
+> `cleanup_input_files()` - THis step deletes all files in the CoverageListener output directory (according to the target host)
+>
+> `path_to_swagger_json` - A second part of the HTTP link to your OpenApi/Swagger documentation in JSON format<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; Adapted `swagger-<api_name>.json` file will be created in your project root.<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; The "Swagger 2.0" format is completely compatible with this tool.<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; The "OpenAPI 3.0.2" format is partly compatible.
+> "Tags coverage summary" calculation is not supported.<br>
+>
+> `auth` - An authentication parameter for "requests" lib. Skip it if your API doesn't require authentication.
+
+### 3. Create and place `swagger-coverage-config-<api_name>.json` file(s) to your project:
+
+```json
 {
-  "output_dir": "swagger-coverage-output",
-  "swagger_coverage_config": "swagger-coverage-config.json",
-  "link_to_swagger_json": "https://petstore.swagger.io/v2/swagger.json",
-  "ignore_requests": [
-    "*any-part-of-request-name*",
-  ]
+  "rules": {
+    "status": {
+      "enable": true,
+      "ignore": [
+        "500"
+      ],
+      "filter": []
+    },
+    "only-declared-status": {
+      "enable": false
+    },
+    "exclude-deprecated": {
+      "enable": true
+    }
+  },
+  "writers": {
+    "html": {
+      "locale": "en",
+      "filename": "swagger-coverage-report-petstore.html"
+    }
+  }
 }
 ```
 
-* **output_dir** - Path from your project root to the output folder. The tool will automatically create this folder and save all recorded JSON files there.
-* **swagger_coverage_config** - Path to your `swagger-coverage-config.json` file. Set the value `false` to use default config.
-* **link_to_swagger_json** - HTTP(s) link to your OpenApi/Swagger documentation in JSON format. Adapted `swagger.json`
-  file will be created in your project root.
-* **ignore_requests** - all files matching any of listed masks will be removed before the report generation.
+> ### If you have more than 1 API then this config MUST:
+> #### 1. Be created for each microservice which you track using `CoverageListener`.
+> Otherwise, the default behavior will be applied, and your report will be saved as `swagger-coverage-report.html` which may cause override in case you have multiple APIs
+> #### 2. Contain `writers` section with filename in the format: `swagger-coverage-report-<api_name>.html`
+> #### 3. Be placed in the root of your project
 
-### 4. Add the session scoped fixture
+More examples of configuration options you can find in
+the [Configuration options](https://github.com/JamalZeynalov/swagger-coverage#configuration-options) section of the
+documentation.
 
-```python
-@pytest.fixture(scope="session", autouse=True)
-def setup_swagger_coverage():
-    runner = Runner()
-    runner.cleanup_input_files()
-    runner.setup()
-    yield
-    runner.generate_report()
-```
-
-> #### Note: If your API requires authentication then pass auth as an argument.
-> #### Example:
-> ```python 
-> runner.setup(auth=HTTPBasicAuth("username", "password"))
-> ```
-> This is required to download swagger.json
-
-### 5. Add the session scoped fixture
+### 4. Trace all your API calls with CoverageListener:
 
 ```python
 from requests import Response
@@ -84,15 +140,23 @@ response: Response = CoverageListener(
     params={"type": "active"},
 ).response
 ```
-> #### Note: "auth" and "params" arguments are not required. <br>You can use any other **kwargs that are applicable for Requests library.
 
-### 6. Run your tests and open created `swagger-coverage-report.html` in your browser.
+> #### Note: "auth" and "params" arguments are default for "requests" lib and are not required. <br>You can use any other **kwargs that are applicable for Requests library.
 
+### 5. Run your tests and open created `swagger-coverage-report-<api_name>.html` report(s) in your browser.
 
 # How it works:
-0. The fixture `setup_swagger_coverage` setups required artifacts
-1. During test execution the CoverageListener saves all requests as JSON files in swagger format.
-2. After the test execution the `Runner().generate_report()` creates a new report and saves it into your project root.
 
-> #### Note: The `swagger-coverage-report.html` file depends on `swagger-coverage-results.json`.
-> #### You should keep them together if you want to send this report via email.
+1. The fixture `setup_swagger_coverage` setups required artifacts
+2. During test execution the CoverageListener saves all requests as JSON files in swagger format to a subdirectory named
+   as a called host. (e.g. `swagger-coverage-output/petstore.swagger.io/`).
+3. After all tests execution a `CoverageReporter().generate_report()` creates and saves new report(s) into your project
+   root.
+
+## Created & Maintained By
+
+[Jamal Zeinalov](https://github.com/JamalZeynalov)
+
+## License
+
+Swagger coverage is released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0)
