@@ -1,6 +1,8 @@
+![Supported Python Versions](https://img.shields.io/badge/python-3.6-blue)
+![Version](https://img.shields.io/badge/Version-2.0.1-blue)
 # swagger-coverage-py
 
-### This project is the adapter that allows using [swagger-coverage](https://github.com/viclovsky/swagger-coverage) tool in Python projects (PyTest+Requests).
+#### This project is the adapter that allows using [swagger-coverage](https://github.com/viclovsky/swagger-coverage) tool in Python projects (PyTest+Requests).
 
 ## Original description summary:
 
