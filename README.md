@@ -29,54 +29,59 @@ or just add the dependency to requirements.txt
 
 ```python
 import pytest
-from swagger_coverage_py.runner import Runner
+from swagger_coverage_py.reporter import CoverageReporter
 from requests.auth import HTTPBasicAuth
 
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_swagger_coverage():
-    runner = Runner(api_name="my-project", host="http://my-project.com")
-    runner.cleanup_input_files()
-    runner.setup("/api/v1/resources/my_project/doc/swagger.json", auth=HTTPBasicAuth("username", "password"))
+    reporter = CoverageReporter(api_name="my-project", host="http://my-project.com")
+    reporter.cleanup_input_files()
+    reporter.setup("/api/v1/resources/my_project/doc/swagger.json", auth=HTTPBasicAuth("username", "password"))
 
     yield
-    runner.generate_report()
+    reporter.generate_report()
 ```
 
-#### If you have 2 and more projects, then just add more runners:
+#### If you have 2 and more projects, then just add more reporters:
 
 ```python
 import pytest
-from swagger_coverage_py.runner import Runner
+from swagger_coverage_py.reporter import CoverageReporter
 from requests.auth import HTTPBasicAuth
 
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_swagger_coverage():
-    runner = Runner(api_name="petstore", host="https://petstore.swagger.io")
-    runner.cleanup_input_files()
-    runner.setup(path_to_swagger_json="/v2/swagger.json")
+    reporter = CoverageReporter(api_name="petstore", host="https://petstore.swagger.io")
+    reporter.cleanup_input_files()
+    reporter.setup(path_to_swagger_json="/v2/swagger.json")
 
-    runner2 = Runner(api_name="my-project", host="http://my-project.com")
-    runner2.cleanup_input_files()
-    runner2.setup(path_to_swagger_json="/api/v1/swagger.json", auth=HTTPBasicAuth("username", "password"))
+    reporter2 = CoverageReporter(api_name="my-project", host="http://my-project.com")
+    reporter2.cleanup_input_files()
+    reporter2.setup(path_to_swagger_json="/api/v1/swagger.json", auth=HTTPBasicAuth("username", "password"))
 
     yield
-    runner.generate_report()
-    runner2.generate_report()
+    reporter.generate_report()
+    reporter2.generate_report()
 ```
 
 > #### Steps and Parameters:
-> `api_name` - Define the name of the API. This name will be used to define a configuration file (see below).<br>
-> &nbsp;&nbsp;&nbsp;&nbsp; Here they are `swagger-coverage-config-petstore.json` and `swagger-coverage-config-my-project.json`.<br>
+> `api_name` - Define the name of the API. This name will be used to find a configuration file.<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; For APIs in this example the files must
+> have names `swagger-coverage-config-petstore.json` and `swagger-coverage-config-my-project.json`.<br>
 >
 > `host` - The host of the API.
 > It will be used to download a swagger.json file and to identify the CoverageListener output directory for each API.
 >
-> `cleanup_input_files()` - Deletes all files in the CoverageListener output directory (according to the called API host)
+> `cleanup_input_files()` - THis step deletes all files in the CoverageListener output directory (according to the target host)
 >
-> `path_to_swagger_json` - A second part of the HTTP link to your OpenApi/Swagger documentation in JSON format
-> &nbsp;&nbsp;&nbsp;&nbsp; Adapted `swagger-<api_name>.json` file will be created in your project root.
+> `path_to_swagger_json` - A second part of the HTTP link to your OpenApi/Swagger documentation in JSON format<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; Adapted `swagger-<api_name>.json` file will be created in your project root.<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; The "Swagger 2.0" format is completely compatible with this tool.<br>
+> &nbsp;&nbsp;&nbsp;&nbsp; The "OpenAPI 3.0.2" format is partly compatible.
+> "Tags coverage summary" calculation is not supported.<br>
+>
 > `auth` - An authentication parameter for "requests" lib. Skip it if your API doesn't require authentication.
 
 ### 3. Create and place `swagger-coverage-config-<api_name>.json` file(s) to your project:
@@ -134,16 +139,17 @@ response: Response = CoverageListener(
 ).response
 ```
 
-> #### Note: "auth" and "params" arguments are not required. <br>You can use any other **kwargs that are applicable for Requests library.
+> #### Note: "auth" and "params" arguments are default for "requests" lib and are not required. <br>You can use any other **kwargs that are applicable for Requests library.
 
-### 5. Run your tests and open created `swagger-coverage-report.html` in your browser.
+### 5. Run your tests and open created `swagger-coverage-report-<api_name>.html` report(s) in your browser.
 
 # How it works:
 
 1. The fixture `setup_swagger_coverage` setups required artifacts
 2. During test execution the CoverageListener saves all requests as JSON files in swagger format to a subdirectory named
-   as a called host. (e.g. `swagger-coverage-output/petstore.swagger.io/`). 
-3. After all tests execution a `Runner().generate_report()` creates and saves new report(s) into your project root.
+   as a called host. (e.g. `swagger-coverage-output/petstore.swagger.io/`).
+3. After all tests execution a `CoverageReporter().generate_report()` creates and saves new report(s) into your project
+   root.
 
 ## Created & Maintained By
 

@@ -7,7 +7,7 @@ from pathlib import Path
 import requests
 
 
-class Runner:
+class CoverageReporter:
     def __init__(self, api_name: str, host: str):
         self.host = host
         self.swagger_doc_file = f"swagger-{api_name}.json"
@@ -26,9 +26,11 @@ class Runner:
         link_to_swagger_json = f"{self.host}{path_to_swagger_json}"
 
         response = requests.get(link_to_swagger_json, auth=auth)
-        assert response.ok, f"Swagger doc is not pulled. See details: " \
-                            f"{response.status_code} {response.request.url}" \
-                            f"{response.content}\n{response.content}"
+        assert response.ok, (
+            f"Swagger doc is not pulled. See details: "
+            f"{response.status_code} {response.request.url}"
+            f"{response.content}\n{response.content}"
+        )
         swagger_json_data = response.json()
 
         with open(self.swagger_doc_file, "w+") as f:
@@ -39,7 +41,9 @@ class Runner:
         cmd_ = "src/swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
 
         if config := self.swagger_coverage_config:
-            os.system(f"{cmd_} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}")
+            os.system(
+                f"{cmd_} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}"
+            )
         else:
             os.system(f"{cmd_} -s {self.swagger_doc_file} -i {self.output_dir}")
 
