@@ -1,4 +1,6 @@
 import json
+import os
+import platform
 import re
 from typing import List
 
@@ -95,10 +97,31 @@ class CoverageListener:
         file_name = (
             f"{self.__method.upper()} {self.__uri.formatted[1::]} ({rnd}).json".replace(
                 "/", "-"
-            )
+            ).replace(":", "_")
         )
         path_ = f"swagger-coverage-output/{self.__output_subdir()}"
-        with open(f"{path_}/{file_name}", "w+") as file:
-            file.write(json.dumps(schema_dict, indent=4))
+        file_path = f"{path_}/{file_name}"
+
+        try:
+            with open(file_path, "w+") as file:
+                file.write(json.dumps(schema_dict, indent=4))
+
+        except FileNotFoundError as e:
+            system_ = platform.system()
+            abs_path = os.path.abspath(file_path)
+
+            if system_ == "Windows" and len(abs_path) > 256:
+                raise EnvironmentError(
+                    f"Absolute path length is greater than 256 symbols:\n"
+                    f"{abs_path}\n"
+                    f"To remove this restriction you can use this guide: "
+                    f"https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation#enable-long-paths-in-windows-10-version-1607-and-later "
+                )
+            else:
+                raise Exception(
+                    f"Cannot write to file.\n"
+                    f"Path: {abs_path}\n"
+                    f"Details: {e.strerror}"
+                )
 
         return schema_dict
