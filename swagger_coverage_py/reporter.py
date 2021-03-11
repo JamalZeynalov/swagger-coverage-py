@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 from pathlib import Path
+import platform
 
 import requests
 
@@ -53,11 +54,15 @@ class CoverageReporter:
             raise Exception(
                 f"No commandline tools is found in following locations:\n{cmd_}\n{cmd_venv}\n"
             )
+
         if config := self.swagger_coverage_config:
             command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}"
-            os.system(command)
         else:
-            os.system(f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir}")
+            command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir}"
+
+        command = command if platform.system() != "Windows" else command.replace("/", "\\")
+
+        os.system(command)
 
     def cleanup_input_files(self):
         shutil.rmtree(self.output_dir, ignore_errors=True)
