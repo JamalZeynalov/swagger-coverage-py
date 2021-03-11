@@ -16,6 +16,11 @@ find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%
 # How to use:
 All required steps are listed below. Additionally, you can find a working example here: [allure-results-sample](https://github.com/JamalZeynalov/allure-results-sample).
 
+### 0. Resolve dependencies:
+* python 3.6+
+* java JDK 11+ (with JAVA_HOME environment variable set)
+* Enable Long Paths (Windows only). Check the guide [HERE](https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation#enable-long-paths-in-windows-10-version-1607-and-later)
+
 ### 1. Install `swagger-coverage-py` as a project requirement.
 
 ```shell

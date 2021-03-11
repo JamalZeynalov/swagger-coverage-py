@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="swagger-coverage",
-    version="2.0.1",
+    version="2.0.2",
     author="Jamal Zeinalov",
     author_email="jamal.zeynalov@gmail.com",
     description='Python adapter for "swagger-coverage" tool',
