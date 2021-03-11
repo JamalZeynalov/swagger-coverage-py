@@ -23,5 +23,5 @@ setup(
         "Faker>=6.0.0",
         "setuptools>=53.0.0",
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.6",
 )
