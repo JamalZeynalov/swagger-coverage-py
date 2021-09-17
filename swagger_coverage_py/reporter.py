@@ -21,12 +21,21 @@ class CoverageReporter:
         subdir = re.match(r"(^\w*)://(.*)", self.host).group(2)
         return f"{output_dir}/{subdir}"
 
-    def setup(self, path_to_swagger_json: str, auth: object = None):
+    def setup(
+        self, path_to_swagger_json: str, auth: object = None, cookies: dict = None
+    ):
+        """Setup all required attributes to generate report
+
+        :param path_to_swagger_json: The relative URL path to the swagger.json (example: "/docs/api")
+        :param auth: Authentication object acceptable by "requests" library
+        :param cookies: Cookies dictionary. (Usage example: set this to bypass Okta auth locally)
+
+        """
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)
 
         link_to_swagger_json = f"{self.host}{path_to_swagger_json}"
 
-        response = requests.get(link_to_swagger_json, auth=auth)
+        response = requests.get(link_to_swagger_json, auth=auth, cookies=cookies)
         assert response.ok, (
             f"Swagger doc is not pulled. See details: "
             f"{response.status_code} {response.request.url}"
@@ -60,7 +69,9 @@ class CoverageReporter:
         else:
             command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir}"
 
-        command = command if platform.system() != "Windows" else command.replace("/", "\\")
+        command = (
+            command if platform.system() != "Windows" else command.replace("/", "\\")
+        )
 
         os.system(command)
 
