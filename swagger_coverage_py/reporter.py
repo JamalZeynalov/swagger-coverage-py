@@ -11,7 +11,7 @@ import requests
 class CoverageReporter:
     def __init__(self, api_name: str, host: str):
         self.host = host
-        self.swagger_doc_file = f"swagger-{api_name}.json"
+        self.swagger_doc_file = f"swagger-doc-{api_name}.json"
         self.output_dir = self.__get_output_dir()
         self.ignore_requests = []
         self.swagger_coverage_config = f"swagger-coverage-config-{api_name}.json"
