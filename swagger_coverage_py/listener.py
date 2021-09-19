@@ -60,7 +60,8 @@ class CoverageListener:
         return params_
 
     def __query_params(self) -> list:
-        if not (q_params := self.__other_request_params.get("params")):
+        q_params = self.__other_request_params.get("params")
+        if not q_params:
             return []
 
         params_ = []

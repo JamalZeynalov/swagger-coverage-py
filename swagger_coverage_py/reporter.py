@@ -64,7 +64,8 @@ class CoverageReporter:
                 f"No commandline tools is found in following locations:\n{cmd_}\n{cmd_venv}\n"
             )
 
-        if config := self.swagger_coverage_config:
+        config = self.swagger_coverage_config
+        if config:
             command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}"
         else:
             command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir}"
