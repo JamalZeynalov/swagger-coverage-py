@@ -96,12 +96,13 @@ class CoverageListener:
         }
         rnd = Faker().pystr(min_chars=5, max_chars=5)
         file_name = (
-            f"{self.__method.upper()} {self.__uri.formatted[1::]} ({rnd}).json".replace(
+            f"{self.__method.upper()} {self.__uri.formatted[1::]}".replace(
                 "/", "-"
             ).replace(":", "_")
         )
         path_ = f"swagger-coverage-output/{self.__output_subdir()}"
-        file_path = f"{path_}/{file_name}"
+        file_path = f"{path_}/{file_name}".split("?")[0]
+        file_path = f"{file_path} ({rnd}).json"
 
         try:
             with open(file_path, "w+") as file:
