@@ -1,9 +1,9 @@
 import json
 import os
+import platform
 import re
 import shutil
 from pathlib import Path
-import platform
 
 import requests
 
@@ -45,21 +45,21 @@ class CoverageReporter:
             swagger_json_data["swagger"] = "2.0"
             f.write(json.dumps(swagger_json_data))
 
-    def generate_report(self):
+    def generate_report(self, venv_path="venv"):
         inner_location = "swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
+
         cmd_ = f"src/{inner_location}"
-        cmd_venv = f"venv/src/{inner_location}"
-        cmd_venv_2 = f".venv/src/{inner_location}"
+        cmd_venv = f"{venv_path}/src/{inner_location}"
 
         if Path(cmd_).exists():
             cmd_path = cmd_
         elif Path(cmd_venv).exists():
             cmd_path = cmd_venv
-        elif Path(cmd_venv_2).exists():
-            cmd_path = cmd_venv_2
         else:
             raise Exception(
-                f"No commandline tools is found in following locations:\n{cmd_}\n{cmd_venv}\n"
+                f"No commandline tools is found in following locations:\n{cmd_}\n{cmd_venv}.\n"
+                f"Make sure your venv_path parameter matches to your "
+                f"virtual environment directory name.\n"
             )
 
         config = self.swagger_coverage_config
