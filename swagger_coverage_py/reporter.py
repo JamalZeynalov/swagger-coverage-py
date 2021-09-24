@@ -31,8 +31,6 @@ class CoverageReporter:
         :param cookies: Cookies dictionary. (Usage example: set this to bypass Okta auth locally)
 
         """
-        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
-
         link_to_swagger_json = f"{self.host}{path_to_swagger_json}"
 
         response = requests.get(link_to_swagger_json, auth=auth, cookies=cookies)
@@ -78,3 +76,4 @@ class CoverageReporter:
 
     def cleanup_input_files(self):
         shutil.rmtree(self.output_dir, ignore_errors=True)
+        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
