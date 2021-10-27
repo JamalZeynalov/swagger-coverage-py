@@ -1,5 +1,6 @@
 ![Supported Python Versions](https://img.shields.io/badge/python-3.6-blue)
 ![Version](https://img.shields.io/badge/Version-2.0.1-blue)
+
 # swagger-coverage-py
 
 #### This project is the adapter that allows using [swagger-coverage](https://github.com/viclovsky/swagger-coverage) tool in Python projects (PyTest+Requests).
@@ -14,12 +15,16 @@ find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%
 <img src="https://raw.githubusercontent.com/JamalZeynalov/swagger-coverage-py/master/images/swagger-coverage-report.png" width=1100>
 
 # How to use:
-All required steps are listed below. Additionally, you can find a working example here: [allure-results-sample](https://github.com/JamalZeynalov/allure-results-sample).
+
+All required steps are listed below. Additionally, you can find a working example
+here: [allure-results-sample](https://github.com/JamalZeynalov/allure-results-sample).
 
 ### 0. Resolve dependencies:
+
 * python 3.6+
 * java JDK 11+ (with JAVA_HOME environment variable set)
-* Enable Long Paths (Windows only). Check the guide [HERE](https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation#enable-long-paths-in-windows-10-version-1607-and-later)
+* Enable Long Paths (Windows only). Check the
+  guide [HERE](https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation#enable-long-paths-in-windows-10-version-1607-and-later)
 
 ### 1. Install `swagger-coverage-py` as a project requirement.
 
@@ -33,7 +38,13 @@ or just add the dependency to requirements.txt
 -e git+ssh://git@github.com/JamalZeynalov/swagger-coverage-py.git#egg=swagger_coverage
 ```
 
-### 2. Add the session-scoped fixture
+### 2. Add environment variables (Optionally):
+```dotenv
+API_DOCS_TYPE="swagger"  # Note: "openapi" is default type of API docs
+API_DOCS_VERSION="2.0"  # Note: "3.0.0" is default version of API docs
+```
+
+### 3. Add the session-scoped fixture
 
 ```python
 import pytest
@@ -92,31 +103,31 @@ def setup_swagger_coverage():
 >
 > `auth` - An authentication parameter for "requests" lib. Skip it if your API doesn't require authentication.
 
-### 3. Create and place `swagger-coverage-config-<api_name>.json` file(s) to your project:
+### 4. Create and place `swagger-coverage-config-<api_name>.json` file(s) to your project:
 
 ```json
 {
-  "rules": {
-    "status": {
-      "enable": true,
-      "ignore": [
-        "500"
-      ],
-      "filter": []
+    "rules": {
+        "status": {
+            "enable": true,
+            "ignore": [
+                "500"
+            ],
+            "filter": []
+        },
+        "only-declared-status": {
+            "enable": false
+        },
+        "exclude-deprecated": {
+            "enable": true
+        }
     },
-    "only-declared-status": {
-      "enable": false
-    },
-    "exclude-deprecated": {
-      "enable": true
+    "writers": {
+        "html": {
+            "locale": "en",
+            "filename": "swagger-coverage-report-petstore.html"
+        }
     }
-  },
-  "writers": {
-    "html": {
-      "locale": "en",
-      "filename": "swagger-coverage-report-petstore.html"
-    }
-  }
 }
 ```
 
@@ -130,7 +141,7 @@ More examples of configuration options you can find in
 the [Configuration options](https://github.com/JamalZeynalov/swagger-coverage#configuration-options) section of the
 documentation.
 
-### 4. Trace all your API calls with CoverageListener:
+### 5. Trace all your API calls with CoverageListener:
 
 ```python
 from requests import Response
@@ -149,10 +160,13 @@ response: Response = CoverageListener(
 
 > #### Note: "auth" and "params" arguments are default for "requests" lib and are not required. <br>You can use any other **kwargs that are applicable for Requests library.
 
-### 5. Run your tests and open created `swagger-coverage-report-<api_name>.html` report(s) in your browser.
+### 6. Run your tests and open created `swagger-coverage-report-<api_name>.html` report(s) in your browser.
+
 Important remarks:
-1. Virtual environments are supported. Make sure your virtual environment directory has name `venv`.  
-2. To create report you have to run your test from the project root. Check that workind directory of your runner is not `"<root>/test"`
+
+1. Virtual environments are supported. Make sure your virtual environment directory has name `venv`.
+2. To create report you have to run your test from the project root. Check that workind directory of your runner is
+   not `"<root>/test"`
 
 # How it works:
 

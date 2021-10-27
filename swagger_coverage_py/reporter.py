@@ -1,4 +1,3 @@
-import json
 import os
 import platform
 import re
@@ -6,6 +5,8 @@ import shutil
 from pathlib import Path
 
 import requests
+
+from swagger_coverage_py.docs_writers.api_doc_writer import write_api_doc_to_file
 
 
 class CoverageReporter:
@@ -41,9 +42,7 @@ class CoverageReporter:
         )
         swagger_json_data = response.json()
 
-        with open(self.swagger_doc_file, "w+") as f:
-            swagger_json_data["swagger"] = "2.0"
-            f.write(json.dumps(swagger_json_data))
+        write_api_doc_to_file(self.swagger_doc_file, swagger_json_data)
 
     def generate_report(self, venv_path="venv"):
         inner_location = "swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
