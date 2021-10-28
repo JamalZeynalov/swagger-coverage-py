@@ -6,9 +6,11 @@ import re
 from faker import Faker
 from requests import Response
 
+from swagger_coverage_py.uri import URI
+
 
 class ApiDocsManagerBase:
-    def __init__(self, uri: 'URI', response: Response, kwargs: dict, method: str = None):
+    def __init__(self, uri: URI, response: Response, kwargs: dict, method: str = None):
         self._uri = uri
         self._method = method
         self._response: Response = response
@@ -57,11 +59,9 @@ class ApiDocsManagerBase:
     def write_schema(self):
         schema_dict = self._get_schema()
         rnd = Faker().pystr(min_chars=5, max_chars=5)
-        file_name = (
-            f"{self._method.upper()} {self._uri.formatted[1::]}".replace(
-                "/", "-"
-            ).replace(":", "_")
-        )
+        file_name = f"{self._method.upper()} {self._uri.formatted[1::]}".replace(
+            "/", "-"
+        ).replace(":", "_")
         path_ = f"swagger-coverage-output/{self.__get_output_subdir()}"
         file_path = f"{path_}/{file_name}".split("?")[0]
         file_path = f"{file_path} ({rnd}).json"

@@ -2,10 +2,11 @@ from requests import Response
 
 from swagger_coverage_py.configs import API_DOCS_TYPE, API_DOCS_VERSION
 from swagger_coverage_py.results_writers.base_schemas_manager import ApiDocsManagerBase
+from swagger_coverage_py.uri import URI
 
 
 class OpenApiSchemasManager(ApiDocsManagerBase):
-    def __init__(self, uri: 'URI', method: str, response: Response, kwargs: dict):
+    def __init__(self, uri: URI, method: str, response: Response, kwargs: dict):
         super().__init__(uri, response, kwargs, method)
 
     def _paths(self):
@@ -27,9 +28,7 @@ class OpenApiSchemasManager(ApiDocsManagerBase):
     def _get_schema(self):
         schema_dict = {
             API_DOCS_TYPE: API_DOCS_VERSION,
-            "info": {
-                "title": "Recorded Request"
-            },
+            "info": {"title": "Recorded Request"},
             "paths": self._paths(),
         }
         return schema_dict

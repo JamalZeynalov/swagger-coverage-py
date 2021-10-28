@@ -5,10 +5,11 @@ from requests import Response
 
 from swagger_coverage_py.configs import API_DOCS_TYPE, API_DOCS_VERSION
 from swagger_coverage_py.results_writers.base_schemas_manager import ApiDocsManagerBase
+from swagger_coverage_py.uri import URI
 
 
 class SwaggerSchemasManager(ApiDocsManagerBase):
-    def __init__(self, uri: 'URI', method: str, response: Response, kwargs: dict):
+    def __init__(self, uri: URI, method: str, response: Response, kwargs: dict):
         super().__init__(uri, response, kwargs, method)
         self._uri = uri
         self.__response = response
@@ -27,10 +28,13 @@ class SwaggerSchemasManager(ApiDocsManagerBase):
 
     def _paths(self):
         path_ = self._uri.raw.split("?")[0]
+        params = (
+            self._get_path_params() + self._get_query_params() + self._get_body_params()
+        )
         dict_ = {
             path_: {
                 self._method: {
-                    "parameters": self._get_path_params() + self._get_query_params() + self._get_body_params(),
+                    "parameters": params,
                     "responses": {self.__response.status_code: {}},
                 }
             }
