@@ -1,0 +1,3 @@
+include swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline
+include swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline.bat
+include swagger_coverage_py/swagger-coverage-commandline/lib/*.jar

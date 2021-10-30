@@ -44,26 +44,18 @@ class CoverageReporter:
 
         write_api_doc_to_file(self.swagger_doc_file, swagger_json_data)
 
-    def generate_report(self, venv_path="venv"):
-        inner_location = "swagger-coverage/swagger_coverage_py/swagger-coverage-commandline/bin/swagger-coverage-commandline"
+    def generate_report(self):
+        inner_location = "swagger-coverage-commandline/bin/swagger-coverage-commandline"
 
-        cmd_ = f"src/{inner_location}"
-        cmd_venv = f"{venv_path}/src/{inner_location}"
+        cmd_path = os.path.join(os.path.dirname(__file__), inner_location)
+        assert Path(
+            cmd_path
+        ).exists(), (
+            f"No commandline tools is found in following locations:\n{cmd_path}\n"
+        )
 
-        if Path(cmd_).exists():
-            cmd_path = cmd_
-        elif Path(cmd_venv).exists():
-            cmd_path = cmd_venv
-        else:
-            raise Exception(
-                f"No commandline tools is found in following locations:\n{cmd_}\n{cmd_venv}.\n"
-                f"Make sure your venv_path parameter matches to your "
-                f"virtual environment directory name.\n"
-            )
-
-        config = self.swagger_coverage_config
-        if config:
-            command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir} -c {config}"
+        if self.swagger_coverage_config:
+            command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir} -c {self.swagger_coverage_config}"
         else:
             command = f"{cmd_path} -s {self.swagger_doc_file} -i {self.output_dir}"
 
