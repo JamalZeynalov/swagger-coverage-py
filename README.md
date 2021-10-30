@@ -29,13 +29,7 @@ here: [allure-results-sample](https://github.com/JamalZeynalov/allure-results-sa
 ### 1. Install `swagger-coverage-py` as a project requirement.
 
 ```shell
-pip install -e git+ssh://git@github.com/JamalZeynalov/swagger-coverage-py.git#egg=swagger_coverage
-```
-
-or just add the dependency to requirements.txt
-
-```text
--e git+ssh://git@github.com/JamalZeynalov/swagger-coverage-py.git#egg=swagger_coverage
+pip install swagger-coverage
 ```
 
 ### 2. Add environment variables (Optionally):
