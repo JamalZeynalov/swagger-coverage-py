@@ -2,8 +2,8 @@ import json
 import os
 import platform
 import re
-import yaml
 
+import yaml
 from faker import Faker
 from requests import Response
 
@@ -75,7 +75,9 @@ class ApiDocsManagerBase:
                 elif API_DOCS_FORMAT == "json":
                     file.write(json.dumps(schema_dict, indent=4))
                 else:
-                    raise Exception(f"Unexpected docs format: {API_DOCS_FORMAT}. Valid formats: json, yaml")
+                    raise Exception(
+                        f"Unexpected docs format: {API_DOCS_FORMAT}. Valid formats: json, yaml"
+                    )
 
         except FileNotFoundError as e:
             system_ = platform.system()

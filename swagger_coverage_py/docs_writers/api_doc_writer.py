@@ -1,9 +1,9 @@
 import json
 
+import requests
 import yaml
 
-from swagger_coverage_py.configs import API_DOCS_TYPE, API_DOCS_FORMAT
-import requests
+from swagger_coverage_py.configs import API_DOCS_FORMAT, API_DOCS_TYPE
 
 
 def __write_api_doc_to_json(file_path: str, api_doc_data: requests.Response):

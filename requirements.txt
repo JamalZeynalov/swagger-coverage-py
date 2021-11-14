@@ -2,3 +2,5 @@ requests>=2.25.1
 Faker>=6.0.0
 setuptools>=53.0.0
 PyYAML~=6.0
+python-dotenv~=0.16.0
+rootpath~=0.1.1
