@@ -6,13 +6,14 @@ from pathlib import Path
 
 import requests
 
+from swagger_coverage_py.configs import API_DOCS_FORMAT
 from swagger_coverage_py.docs_writers.api_doc_writer import write_api_doc_to_file
 
 
 class CoverageReporter:
     def __init__(self, api_name: str, host: str):
         self.host = host
-        self.swagger_doc_file = f"swagger-doc-{api_name}.json"
+        self.swagger_doc_file = f"swagger-doc-{api_name}.{API_DOCS_FORMAT}"
         self.output_dir = self.__get_output_dir()
         self.ignore_requests = []
         self.swagger_coverage_config = f"swagger-coverage-config-{api_name}.json"
@@ -40,9 +41,8 @@ class CoverageReporter:
             f"{response.status_code} {response.request.url}"
             f"{response.content}\n{response.content}"
         )
-        swagger_json_data = response.json()
 
-        write_api_doc_to_file(self.swagger_doc_file, swagger_json_data)
+        write_api_doc_to_file(self.swagger_doc_file, response)
 
     def generate_report(self):
         inner_location = "swagger-coverage-commandline/bin/swagger-coverage-commandline"
