@@ -22,6 +22,10 @@ setup(
         "requests>=2.25.1",
         "Faker>=6.0.0",
         "setuptools>=53.0.0",
+        "PyYAML",
+        "python-dotenv~=0.16.0",
+        "rootpath~=0.1.1",
+
     ],
     python_requires=">=3.6",
     include_package_data=True,
