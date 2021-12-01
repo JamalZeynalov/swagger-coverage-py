@@ -3,9 +3,11 @@ import os
 import platform
 import re
 
+import yaml
 from faker import Faker
 from requests import Response
 
+from swagger_coverage_py.configs import API_DOCS_FORMAT
 from swagger_coverage_py.uri import URI
 
 
@@ -64,11 +66,18 @@ class ApiDocsManagerBase:
         ).replace(":", "_")
         path_ = f"swagger-coverage-output/{self.__get_output_subdir()}"
         file_path = f"{path_}/{file_name}".split("?")[0]
-        file_path = f"{file_path} ({rnd}).json"
+        file_path = f"{file_path} ({rnd}).{API_DOCS_FORMAT}"
 
         try:
             with open(file_path, "w+") as file:
-                file.write(json.dumps(schema_dict, indent=4))
+                if API_DOCS_FORMAT == "yaml":
+                    file.write(yaml.safe_dump(schema_dict, indent=4, sort_keys=False))
+                elif API_DOCS_FORMAT == "json":
+                    file.write(json.dumps(schema_dict, indent=4))
+                else:
+                    raise Exception(
+                        f"Unexpected docs format: {API_DOCS_FORMAT}. Valid formats: json, yaml"
+                    )
 
         except FileNotFoundError as e:
             system_ = platform.system()

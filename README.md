@@ -36,6 +36,7 @@ pip install swagger-coverage
 ```dotenv
 API_DOCS_TYPE="swagger"  # Note: "openapi" is default type of API docs
 API_DOCS_VERSION="2.0"  # Note: "3.0.0" is default version of API docs
+API_DOCS_FORMAT="yaml"  # Note: "json" is default format of API docs and output files
 ```
 
 ### 3. Add the session-scoped fixture
@@ -77,6 +78,23 @@ def setup_swagger_coverage():
     yield
     reporter.generate_report()
     reporter2.generate_report()
+```
+
+#### YAML format is also supported:
+
+```python
+import pytest
+from swagger_coverage_py.reporter import CoverageReporter
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_swagger_coverage():
+    reporter = CoverageReporter(api_name="petstore", host="https://petstore.swagger.io")
+    reporter.cleanup_input_files()
+    reporter.setup("/v2/swagger.yaml")
+
+    yield
+    reporter.generate_report()
 ```
 
 > #### Steps and Parameters:
