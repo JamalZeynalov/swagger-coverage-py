@@ -22,7 +22,7 @@ class ApiDocsManagerBase:
         params_ = []
         for key, value in self._uri.uri_params.items():
             params_.append(
-                {"name": key, "in": "path", "required": False, "x-example": value}
+                {"name": key, "in": "path", "required": False, "x-example": str(value)}
             )
         return params_
 
@@ -51,7 +51,7 @@ class ApiDocsManagerBase:
         params_ = []
         for key, value in q_params:
             params_.append(
-                {"name": key, "in": "query", "required": False, "x-example": value}
+                {"name": key, "in": "query", "required": False, "x-example": str(value)}
             )
         return params_
 
