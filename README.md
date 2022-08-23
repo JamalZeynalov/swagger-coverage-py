@@ -37,7 +37,7 @@ pip install swagger-coverage
 API_DOCS_TYPE="swagger"  # Note: "openapi" is default type of API docs
 API_DOCS_VERSION="2.0"  # Note: "3.0.0" is default version of API docs
 API_DOCS_FORMAT="yaml"  # Note: "json" is default format of API docs and output files
-IS_DISABLED=True  # Skip requests recording. No files will be saved to 'swagger-coverage-output' dir 
+API_COVERAGE_REPORTS_DISABLED=True  # Skip requests recording. No files will be saved to 'swagger-coverage-output' dir 
 
 ```
 
