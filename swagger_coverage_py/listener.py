@@ -1,5 +1,6 @@
 import requests
 
+from swagger_coverage_py.configs import IS_DISABLED
 from swagger_coverage_py.request_schema_handler import RequestSchemaHandler
 from swagger_coverage_py.uri import URI
 
@@ -21,4 +22,5 @@ class CoverageListener:
         self.__uri = URI(base_url, raw_path, **uri_params)
         self.response = requests.request(method, self.__uri.full, **kwargs)
 
-        RequestSchemaHandler(self.__uri, method, self.response, kwargs).write_schema()
+        if not IS_DISABLED:
+            RequestSchemaHandler(self.__uri, method, self.response, kwargs).write_schema()
