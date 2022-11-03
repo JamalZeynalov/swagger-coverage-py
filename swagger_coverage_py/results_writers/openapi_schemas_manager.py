@@ -14,7 +14,7 @@ class OpenApiSchemasManager(ApiDocsManagerBase):
         dict_ = {
             path_: {
                 self._method: {
-                    "parameters": self._get_path_params() + self._get_query_params(),
+                    "parameters": self._get_path_params() + self._get_query_params() + self._get_header_params(),
                     "responses": {self._response.status_code: {}},
                 }
             }
