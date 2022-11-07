@@ -2,6 +2,7 @@ import json
 import os
 import platform
 import re
+import urllib
 
 import yaml
 from faker import Faker
@@ -22,7 +23,7 @@ class ApiDocsManagerBase:
         params_ = []
         for key, value in self._uri.uri_params.items():
             params_.append(
-                {"name": key, "in": "path", "required": False, "x-example": str(value)}
+                {"name": key, "in": "path", "required": False, "x-example": urllib.parse.unquote(str(value))}
             )
         return params_
 
@@ -51,7 +52,7 @@ class ApiDocsManagerBase:
         params_ = []
         for key, value in q_params:
             params_.append(
-                {"name": key, "in": "query", "required": False, "x-example": str(value)}
+                {"name": key, "in": "query", "required": False, "x-example": urllib.parse.unquote(str(value))}
             )
         return params_
 
