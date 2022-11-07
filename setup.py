@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="swagger-coverage",
-    version="2.2.7",
+    version="2.2.8",
     author="Jamal Zeinalov",
     author_email="jamal.zeynalov@gmail.com",
     description='Python adapter for "swagger-coverage" tool',
@@ -19,13 +19,13 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "requests~=2.28.1",
-        "Faker~=14.1.0",
-        "setuptools~=65.2.0",
-        "PyYAML~=6.0",
-        "python-dotenv~=0.20.0",
-        "rootpath~=0.1.1",
-        "environs~=9.5.0",
+        "requests>=2.28.1",
+        "Faker>=15.2.0",
+        "setuptools>=65.5.1",
+        "PyYAML>=6.0",
+        "python-dotenv>=0.21.0",
+        "rootpath>=0.1.1",
+        "environs>=9.5.0",
 
     ],
     python_requires=">=3.6",
