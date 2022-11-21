@@ -28,7 +28,7 @@ class ApiDocsManagerBase:
         return params_
 
     def _get_body_params(self):
-        if self._response.request.body is not None:
+        if isinstance(self._response.request.body, dict):
             request_body: dict = {
                 "content": {
                     "application/json": {
