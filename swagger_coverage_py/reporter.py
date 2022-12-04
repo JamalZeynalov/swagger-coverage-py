@@ -11,8 +11,9 @@ from swagger_coverage_py.docs_writers.api_doc_writer import write_api_doc_to_fil
 
 
 class CoverageReporter:
-    def __init__(self, api_name: str, host: str):
+    def __init__(self, api_name: str, host: str, verify:bool = True):
         self.host = host
+        self.verify = verify
         self.swagger_doc_file = f"swagger-doc-{api_name}.{API_DOCS_FORMAT}"
         self.output_dir = self.__get_output_dir()
         self.ignore_requests = []
@@ -35,7 +36,7 @@ class CoverageReporter:
         """
         link_to_swagger_json = f"{self.host}{path_to_swagger_json}"
 
-        response = requests.get(link_to_swagger_json, auth=auth, cookies=cookies)
+        response = requests.get(link_to_swagger_json, auth=auth, cookies=cookies, verify=self.verify)
         assert response.ok, (
             f"Swagger doc is not pulled. See details: "
             f"{response.status_code} {response.request.url}"
