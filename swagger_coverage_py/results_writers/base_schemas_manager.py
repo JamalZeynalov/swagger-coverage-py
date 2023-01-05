@@ -28,10 +28,37 @@ class ApiDocsManagerBase:
         return params_
 
     def _get_body_params(self):
-        if isinstance(self._response.request.body, dict):
+        try:
+            request_body = json.loads(self._response.request.body)
+        except Exception:
+            request_body = None
+
+        if request_body:
+            types = {
+                "object": "object",
+                "str": "string",
+                "int": "number",
+                "float": "number",
+                "bool": "boolean",
+                "list": "array",
+            }
+            properties = {}
+            for k, v in request_body.items():
+                value_type = types.get(type(v).__name__, "object")
+                if value_type == "string":
+                    value = urllib.parse.unquote(str(v))
+                else:
+                    value = v
+
+                properties[k] = {k: value, "type": value_type}
+
             request_body: dict = {
                 "content": {
                     "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": properties
+                        },
                         "example": json.loads(self._response.request.body)
                     }
                 }
