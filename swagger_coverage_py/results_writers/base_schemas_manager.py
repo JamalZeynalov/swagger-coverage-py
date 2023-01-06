@@ -42,27 +42,53 @@ class ApiDocsManagerBase:
                 "bool": "boolean",
                 "list": "array",
             }
-            properties = {}
-            for k, v in request_body.items():
-                value_type = types.get(type(v).__name__, "object")
-                if value_type == "string":
-                    value = urllib.parse.unquote(str(v))
-                else:
-                    value = v
+            if isinstance(request_body, dict):
+                properties = {}
+                for k, v in request_body.items():
+                    value_type = types.get(type(v).__name__, "object")
+                    if value_type == "string":
+                        value = urllib.parse.unquote(str(v))
+                    else:
+                        value = v
+                    properties[k] = {k: value, "type": value_type}
 
-                properties[k] = {k: value, "type": value_type}
-
-            request_body: dict = {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": properties
-                        },
-                        "example": json.loads(self._response.request.body)
+                request_body: dict = {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": properties
+                            },
+                            "example": json.loads(self._response.request.body)
+                        }
                     }
                 }
-            }
+            elif isinstance(request_body, list):
+                items_type = types.get(type(request_body[0]).__name__, "object")
+                request_body: dict = {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": items_type
+                                },
+                            },
+                            "example": json.loads(self._response.request.body)
+                        }
+                    }
+                }
+            else:
+                request_body: dict = {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "string",
+                            },
+                            "example": urllib.parse.unquote(str(self._response.request.body))
+                        }
+                    }
+                }
         else:
             request_body = None
 
