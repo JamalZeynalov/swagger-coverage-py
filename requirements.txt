@@ -3,5 +3,5 @@ Faker>=15.2.0
 setuptools>=65.5.1
 PyYAML>=6.0
 python-dotenv>=0.21.0
-rootpath>=0.1.1
+rootpath==0.1.0
 environs>=9.5.0
