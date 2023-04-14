@@ -2,16 +2,17 @@ import os
 import platform
 import re
 import shutil
+import subprocess
 from pathlib import Path
 
 import requests
 
-from swagger_coverage_py.configs import API_DOCS_FORMAT
+from swagger_coverage_py.configs import API_DOCS_FORMAT, DEBUG_MODE
 from swagger_coverage_py.docs_writers.api_doc_writer import write_api_doc_to_file
 
 
 class CoverageReporter:
-    def __init__(self, api_name: str, host: str, verify:bool = True):
+    def __init__(self, api_name: str, host: str, verify: bool = True):
         self.host = host
         self.verify = verify
         self.swagger_doc_file = f"swagger-doc-{api_name}.{API_DOCS_FORMAT}"
@@ -64,7 +65,10 @@ class CoverageReporter:
             command if platform.system() != "Windows" else command.replace("/", "\\")
         )
 
-        os.system(command)
+        # Suppress all output if not in debug mode
+        command = command + " > /dev/null 2>&1" if not DEBUG_MODE else command
+
+        subprocess.run(command, shell=True)
 
     def cleanup_input_files(self):
         shutil.rmtree(self.output_dir, ignore_errors=True)
