@@ -4,5 +4,4 @@ class URI:
         self.formatted = base_path + unformatted_path.format(**uri_params)
         self.full = f"{self.host}{self.formatted}"
         self.raw = unformatted_path
-        self.base_path = base_path
         self.uri_params: dict = uri_params
