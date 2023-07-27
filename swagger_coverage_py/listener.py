@@ -7,7 +7,7 @@ from swagger_coverage_py.uri import URI
 
 class CoverageListener:
     def __init__(
-        self, method: str, base_url: str, raw_path: str, uri_params: dict, **kwargs
+        self, method: str, base_url: str, raw_path: str, uri_params: dict, base_path: str = "", **kwargs
     ):
         """Records an HTTP request as a file in swagger format
 
@@ -19,7 +19,7 @@ class CoverageListener:
         :param kwargs: Optional arguments that are applicable
             for appropriate request of "requests" library. (e.g. "auth", "headers", "cookies", etc.)
         """
-        self.__uri = URI(base_url, raw_path, **uri_params)
+        self.__uri = URI(base_url, base_path, raw_path, **uri_params)
         self.response = requests.request(method, self.__uri.full, **kwargs)
 
         if not IS_DISABLED:
