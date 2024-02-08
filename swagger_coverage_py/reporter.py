@@ -1,9 +1,11 @@
+import json
 import os
 import platform
 import re
 import shutil
 import subprocess
 from pathlib import Path
+from typing import List
 
 import requests
 
@@ -17,13 +19,30 @@ class CoverageReporter:
         self.verify = verify
         self.swagger_doc_file = f"swagger-doc-{api_name}.{API_DOCS_FORMAT}"
         self.output_dir = self.__get_output_dir()
-        self.ignore_requests = []
         self.swagger_coverage_config = f"swagger-coverage-config-{api_name}.json"
+        self.ignored_paths = self.__get_ignored_paths_from_config()
 
     def __get_output_dir(self):
         output_dir = "swagger-coverage-output"
         subdir = re.match(r"(^\w*)://(.*)", self.host).group(2)
         return f"{output_dir}/{subdir}"
+
+    def __get_ignored_paths_from_config(self) -> List[str]:
+        """Reads the swagger-coverage-config-<api_name>.json file and returns
+        a list of endpoints/paths to exclude from the report
+
+        """
+        paths_to_ignore = []
+        if not self.swagger_coverage_config:
+            return paths_to_ignore
+
+        with open(self.swagger_coverage_config, "r") as file:
+            data = json.load(file)
+            paths = data.get("rules").get("paths", {})
+            if paths.get("enable", False):
+                paths_to_ignore = paths.get("ignore")
+
+        return paths_to_ignore
 
     def setup(
         self, path_to_swagger_json: str, auth: object = None, cookies: dict = None
@@ -37,14 +56,20 @@ class CoverageReporter:
         """
         link_to_swagger_json = f"{self.host}{path_to_swagger_json}"
 
-        response = requests.get(link_to_swagger_json, auth=auth, cookies=cookies, verify=self.verify)
+        response = requests.get(
+            link_to_swagger_json, auth=auth, cookies=cookies, verify=self.verify
+        )
         assert response.ok, (
             f"Swagger doc is not pulled. See details: "
             f"{response.status_code} {response.request.url}"
             f"{response.content}\n{response.content}"
         )
-
-        write_api_doc_to_file(self.swagger_doc_file, response)
+        if self.swagger_coverage_config:
+            write_api_doc_to_file(
+                self.swagger_doc_file,
+                api_doc_data=response,
+                paths_to_delete=self.ignored_paths,
+            )
 
     def generate_report(self):
         inner_location = "swagger-coverage-commandline/bin/swagger-coverage-commandline"

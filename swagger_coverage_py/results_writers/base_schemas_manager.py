@@ -23,7 +23,12 @@ class ApiDocsManagerBase:
         params_ = []
         for key, value in self._uri.uri_params.items():
             params_.append(
-                {"name": key, "in": "path", "required": False, "x-example": urllib.parse.unquote(str(value))}
+                {
+                    "name": key,
+                    "in": "path",
+                    "required": False,
+                    "x-example": urllib.parse.unquote(str(value)),
+                }
             )
         return params_
 
@@ -55,11 +60,8 @@ class ApiDocsManagerBase:
                 request_body: dict = {
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": properties
-                            },
-                            "example": json.loads(self._response.request.body)
+                            "schema": {"type": "object", "properties": properties},
+                            "example": json.loads(self._response.request.body),
                         }
                     }
                 }
@@ -70,11 +72,9 @@ class ApiDocsManagerBase:
                         "application/json": {
                             "schema": {
                                 "type": "array",
-                                "items": {
-                                    "type": items_type
-                                },
+                                "items": {"type": items_type},
                             },
-                            "example": json.loads(self._response.request.body)
+                            "example": json.loads(self._response.request.body),
                         }
                     }
                 }
@@ -85,7 +85,9 @@ class ApiDocsManagerBase:
                             "schema": {
                                 "type": "string",
                             },
-                            "example": urllib.parse.unquote(str(self._response.request.body))
+                            "example": urllib.parse.unquote(
+                                str(self._response.request.body)
+                            ),
                         }
                     }
                 }
@@ -105,7 +107,12 @@ class ApiDocsManagerBase:
         params_ = []
         for key, value in q_params:
             params_.append(
-                {"name": key, "in": "query", "required": False, "x-example": urllib.parse.unquote(str(value))}
+                {
+                    "name": key,
+                    "in": "query",
+                    "required": False,
+                    "x-example": urllib.parse.unquote(str(value)),
+                }
             )
         return params_
 

@@ -7,7 +7,9 @@
 
 ## Original description summary:
 
-> Swagger-coverage gives a full picture about coverage of API tests (regression) based on OAS 2 (Swagger). By saying coverage we mean not a broad theme functionality, but presence (or absence) of calls defined by API methods, parameters, return codes or other conditions which corresponds specification of API.
+> Swagger-coverage gives a full picture about coverage of API tests (regression) based on OAS 2 (Swagger). By saying
+> coverage we mean not a broad theme functionality, but presence (or absence) of calls defined by API methods, parameters,
+> return codes or other conditions which corresponds specification of API.
 
 Some more info about the project you can also
 find [HERE](https://viclovsky.github.io/%D0%B0%D0%B2%D1%82%D0%BE%D1%82%D0%B5%D1%81%D1%82%D1%8B%20%D0%BD%D0%B0%20api/2020/01/16/swagger-coverage)
@@ -33,6 +35,7 @@ pip install swagger-coverage
 ```
 
 ### 2. Add environment variables (Optionally):
+
 ```dotenv
 API_DOCS_TYPE="swagger"  # Note: "openapi" is default type of API docs
 API_DOCS_VERSION="2.0"  # Note: "3.0.0" is default version of API docs
@@ -108,7 +111,8 @@ def setup_swagger_coverage():
 > `host` - The host of the API.
 > It will be used to download a swagger.json file and to identify the CoverageListener output directory for each API.
 >
-> `cleanup_input_files()` - THis step deletes all files in the CoverageListener output directory (according to the target host)
+> `cleanup_input_files()` - THis step deletes all files in the CoverageListener output directory (according to the
+> target host)
 >
 > `path_to_swagger_json` - A second part of the HTTP link to your OpenApi/Swagger documentation in JSON format<br>
 > &nbsp;&nbsp;&nbsp;&nbsp; Adapted `swagger-<api_name>.json` file will be created in your project root.<br>
@@ -130,6 +134,12 @@ def setup_swagger_coverage():
             ],
             "filter": []
         },
+        "paths": {
+            "enable": true,
+            "ignore": [
+                "/user/{username}"
+            ]
+        },
         "only-declared-status": {
             "enable": false
         },
@@ -145,10 +155,15 @@ def setup_swagger_coverage():
     }
 }
 ```
+The `path` section is designed to exclude specific endpoints (all methods) from the final HTML report.
+To do this, you need to set `enable` parameter to `true` and specify a list of endpoints (as you see them in the swagger doc) in the `ignore` section. 
+Then these endpoints will be removed from the API doc before it is saved locally.<br>
+Note: Remove already downloaded API docs before running a new version of this lib.
 
 > ### If you have more than 1 API then this config MUST:
 > #### 1. Be created for each microservice which you track using `CoverageListener`.
-> Otherwise, the default behavior will be applied, and your report will be saved as `swagger-coverage-report.html` which may cause override in case you have multiple APIs
+> Otherwise, the default behavior will be applied, and your report will be saved as `swagger-coverage-report.html` which
+> may cause override in case you have multiple APIs
 > #### 2. Contain `writers` section with filename in the format: `swagger-coverage-report-<api_name>.html`
 > #### 3. Be placed in the root of your project
 
