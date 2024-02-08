@@ -7,7 +7,13 @@ from swagger_coverage_py.uri import URI
 
 class CoverageListener:
     def __init__(
-        self, method: str, base_url: str, raw_path: str, uri_params: dict, base_path: str = "", **kwargs
+        self,
+        method: str,
+        base_url: str,
+        raw_path: str,
+        uri_params: dict,
+        base_path: str = "",
+        **kwargs
     ):
         """Records an HTTP request as a file in swagger format
 
@@ -23,4 +29,6 @@ class CoverageListener:
         self.response = requests.request(method, self.__uri.full, **kwargs)
 
         if not IS_DISABLED:
-            RequestSchemaHandler(self.__uri, method, self.response, kwargs).write_schema()
+            RequestSchemaHandler(
+                self.__uri, method, self.response, kwargs
+            ).write_schema()
