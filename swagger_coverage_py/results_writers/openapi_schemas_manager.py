@@ -11,10 +11,15 @@ class OpenApiSchemasManager(ApiDocsManagerBase):
 
     def _paths(self):
         path_ = self._uri.raw.split("?")[0]
+        params = (
+            self._get_path_params()
+            + self._get_query_params()
+            + self._get_header_params()
+        )
         dict_ = {
             path_: {
                 self._method: {
-                    "parameters": self._get_path_params() + self._get_query_params(),
+                    "parameters": params,
                     "responses": {self._response.status_code: {}},
                 }
             }
