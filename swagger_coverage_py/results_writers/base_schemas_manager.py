@@ -17,7 +17,7 @@ class ApiDocsManagerBase:
         self._uri = uri
         self._method = method
         self._response: Response = response
-        self.__other_request_params = kwargs
+        self._other_request_params = kwargs
 
     def _get_path_params(self) -> list:
         params_ = []
@@ -96,25 +96,36 @@ class ApiDocsManagerBase:
 
         return request_body
 
-    def _get_query_params(self) -> list:
-        q_params = list(self.__other_request_params.get("params", {}).items())
+    def _get_other_request_params(self, params_key: str, params_in: str) -> list:
+        prams_raw = self._other_request_params.get(params_key, {})
+        if prams_raw:
+            params = list(prams_raw.items())
+        else:
+            params = []
+
         raw = self._uri.raw.split("?")
         if len(raw) > 1:
-            q_params += [tuple(x.split("=")) for x in str(raw[1]).split("&")]
-        if not q_params:
+            params += [tuple(x.split("=")) for x in str(raw[1]).split("&")]
+        if not params:
             return []
 
         params_ = []
-        for key, value in q_params:
+        for key, value in params:
             params_.append(
                 {
                     "name": key,
-                    "in": "query",
+                    "in": params_in,
                     "required": False,
                     "x-example": urllib.parse.unquote(str(value)),
                 }
             )
         return params_
+
+    def _get_query_params(self) -> list:
+        return self._get_other_request_params(params_key="params", params_in="query")
+
+    def _get_header_params(self) -> list:
+        return self._get_other_request_params(params_key="headers", params_in="header")
 
     def __get_output_subdir(self):
         return re.match(r"(^\w*)://(.*)", self._uri.host).group(2)

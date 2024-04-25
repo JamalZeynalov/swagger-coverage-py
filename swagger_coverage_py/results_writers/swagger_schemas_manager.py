@@ -29,7 +29,10 @@ class SwaggerSchemasManager(ApiDocsManagerBase):
     def _paths(self):
         path_ = self._uri.raw.split("?")[0]
         params = (
-            self._get_path_params() + self._get_query_params() + self._get_body_params()
+            self._get_path_params()
+            + self._get_query_params()
+            + self._get_body_params()
+            + self._get_header_params()
         )
         dict_ = {
             path_: {
