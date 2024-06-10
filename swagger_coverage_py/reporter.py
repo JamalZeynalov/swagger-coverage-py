@@ -17,13 +17,13 @@ class CoverageReporter:
     def __init__(self, api_name: str, host: str, verify: bool = True):
         self.host = host
         self.verify = verify
-        self.swagger_doc_file = f"swagger-doc-{api_name}.{API_DOCS_FORMAT}"
+        self.swagger_doc_file = f"swagger-coverage/swagger-doc-{api_name}.{API_DOCS_FORMAT}"
         self.output_dir = self.__get_output_dir()
-        self.swagger_coverage_config = f"swagger-coverage-config-{api_name}.json"
+        self.swagger_coverage_config = f"swagger-coverage/configs/swagger-coverage-config-{api_name}.json"
         self.ignored_paths = self.__get_ignored_paths_from_config()
 
     def __get_output_dir(self):
-        output_dir = "swagger-coverage-output"
+        output_dir = "swagger-coverage/swagger-coverage-output"
         subdir = re.match(r"(^\w*)://(.*)", self.host).group(2)
         return f"{output_dir}/{subdir}"
 

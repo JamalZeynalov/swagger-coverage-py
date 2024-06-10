@@ -136,7 +136,7 @@ class ApiDocsManagerBase:
         file_name = f"{self._method.upper()} {self._uri.formatted[1::]}".replace(
             "/", "-"
         ).replace(":", "_")
-        path_ = f"swagger-coverage-output/{self.__get_output_subdir()}"
+        path_ = f"swagger-coverage/swagger-coverage-output/{self.__get_output_subdir()}"
         file_path = f"{path_}/{file_name}".split("?")[0]
         file_path = f"{file_path} ({rnd}).{API_DOCS_FORMAT}"
 
