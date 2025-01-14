@@ -45,7 +45,7 @@ class CoverageReporter:
         return paths_to_ignore
 
     def setup(
-        self, path_to_swagger_json: str, auth: object = None, cookies: dict = None
+            self, path_to_swagger_json: str, auth: object = None, cookies: dict = None
     ):
         """Setup all required attributes to generate report
 
@@ -80,14 +80,20 @@ class CoverageReporter:
         ).exists(), (
             f"No commandline tools is found in following locations:\n{cmd_path}\n"
         )
-        command = [cmd_path, "-s", self.swagger_doc_file, "-i", self.output_dir]
-        if self.swagger_coverage_config:
-            command.extend(["-c", self.swagger_coverage_config])
 
         # Adjust the file paths for Windows
         if platform.system() == "Windows":
-            command = [arg.replace("/", "\\") for arg in command]
-        
+            cmd_path_with_ext = f"{cmd_path}.bat"
+            assert Path(cmd_path_with_ext).exists(), f"File not found: {cmd_path_with_ext}"
+            command = [arg.replace("/", "\\") for arg in
+                       [cmd_path_with_ext, "-s", self.swagger_doc_file, "-i", self.output_dir]]
+        # Adjust the file paths for Unix (Linux/MacOS)
+        else:
+            command = [cmd_path, "-s", self.swagger_doc_file, "-i", self.output_dir]
+
+        if self.swagger_coverage_config:
+            command.extend(["-c", self.swagger_coverage_config])
+
         # Suppress all output if not in debug mode
         if not DEBUG_MODE:
             with open(os.devnull, 'w') as devnull:
