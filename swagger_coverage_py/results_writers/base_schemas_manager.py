@@ -55,7 +55,7 @@ class ApiDocsManagerBase:
                         value = urllib.parse.unquote(str(v))
                     else:
                         value = v
-                    properties[k] = {k: value, "type": value_type}
+                    properties[k] = {"example": value, "type": value_type}
 
                 request_body: dict = {
                     "content": {
