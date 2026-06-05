@@ -25,6 +25,8 @@ class CoverageReporter:
     def __get_output_dir(self):
         output_dir = "swagger-coverage-output"
         subdir = re.match(r"(^\w*)://(.*)", self.host).group(2)
+        if "/" in subdir:
+            subdir = subdir.replace("/", "-")
         return f"{output_dir}/{subdir}"
 
     def __get_ignored_paths_from_config(self) -> List[str]:
@@ -73,7 +75,7 @@ class CoverageReporter:
 
     def generate_report(self):
         inner_location = "swagger-coverage-commandline/bin/swagger-coverage-commandline"
-        
+
         cmd_path = os.path.join(os.path.dirname(__file__), inner_location)
         assert Path(
             cmd_path
@@ -87,14 +89,13 @@ class CoverageReporter:
         # Adjust the file paths for Windows
         if platform.system() == "Windows":
             command = [arg.replace("/", "\\") for arg in command]
-        
+
         # Suppress all output if not in debug mode
         if not DEBUG_MODE:
-            with open(os.devnull, 'w') as devnull:
+            with open(os.devnull, "w") as devnull:
                 subprocess.run(command, stdout=devnull, stderr=devnull)
         else:
             subprocess.run(command)
-
 
     def cleanup_input_files(self):
         shutil.rmtree(self.output_dir, ignore_errors=True)
