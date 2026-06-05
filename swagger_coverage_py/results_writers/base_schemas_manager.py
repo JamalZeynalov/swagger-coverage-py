@@ -128,7 +128,10 @@ class ApiDocsManagerBase:
         return self._get_other_request_params(params_key="headers", params_in="header")
 
     def __get_output_subdir(self):
-        return re.match(r"(^\w*)://(.*)", self._uri.host).group(2)
+        subdir = re.match(r"(^\w*)://(.*)", self._uri.host).group(2)
+        if "/" in subdir:
+            subdir = subdir.replace("/", "-")
+        return subdir
 
     def write_schema(self):
         schema_dict = self._get_schema()
